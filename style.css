@@ -1,0 +1,30 @@
+.container {
+    max-width: 30rem;
+}
+
+.todo-list {
+    margin-top: 2rem;
+}
+
+.todo-item {
+    display : flex;
+    align-items: center;
+}
+
+.todo-item .checkbox {
+    margin : 0.8rem;
+}
+
+.todo-item .todo-label {
+    margin-right: auto;
+}
+
+.add-task {
+    margin-top: 1rem;
+}
+
+.todo-delete {
+    padding : 0.5rem;
+    color: var(--bs-red);
+    font-size: 1.25rem;
+}

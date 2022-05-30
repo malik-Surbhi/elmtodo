@@ -5181,158 +5181,26 @@ var $author$project$Todo$addToList = F2(
 				}
 				]));
 	});
-var $elm$core$List$drop = F2(
-	function (n, list) {
-		drop:
-		while (true) {
-			if (n <= 0) {
-				return list;
-			} else {
-				if (!list.b) {
-					return list;
-				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs;
-					n = $temp$n;
-					list = $temp$list;
-					continue drop;
-				}
-			}
-		}
+var $elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			$elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
 	});
-var $elm$core$List$takeReverse = F3(
-	function (n, list, kept) {
-		takeReverse:
-		while (true) {
-			if (n <= 0) {
-				return kept;
-			} else {
-				if (!list.b) {
-					return kept;
-				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs,
-						$temp$kept = A2($elm$core$List$cons, x, kept);
-					n = $temp$n;
-					list = $temp$list;
-					kept = $temp$kept;
-					continue takeReverse;
-				}
-			}
-		}
-	});
-var $elm$core$List$takeTailRec = F2(
-	function (n, list) {
-		return $elm$core$List$reverse(
-			A3($elm$core$List$takeReverse, n, list, _List_Nil));
-	});
-var $elm$core$List$takeFast = F3(
-	function (ctr, n, list) {
-		if (n <= 0) {
-			return _List_Nil;
-		} else {
-			var _v0 = _Utils_Tuple2(n, list);
-			_v0$1:
-			while (true) {
-				_v0$5:
-				while (true) {
-					if (!_v0.b.b) {
-						return list;
-					} else {
-						if (_v0.b.b.b) {
-							switch (_v0.a) {
-								case 1:
-									break _v0$1;
-								case 2:
-									var _v2 = _v0.b;
-									var x = _v2.a;
-									var _v3 = _v2.b;
-									var y = _v3.a;
-									return _List_fromArray(
-										[x, y]);
-								case 3:
-									if (_v0.b.b.b.b) {
-										var _v4 = _v0.b;
-										var x = _v4.a;
-										var _v5 = _v4.b;
-										var y = _v5.a;
-										var _v6 = _v5.b;
-										var z = _v6.a;
-										return _List_fromArray(
-											[x, y, z]);
-									} else {
-										break _v0$5;
-									}
-								default:
-									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
-										var _v7 = _v0.b;
-										var x = _v7.a;
-										var _v8 = _v7.b;
-										var y = _v8.a;
-										var _v9 = _v8.b;
-										var z = _v9.a;
-										var _v10 = _v9.b;
-										var w = _v10.a;
-										var tl = _v10.b;
-										return (ctr > 1000) ? A2(
-											$elm$core$List$cons,
-											x,
-											A2(
-												$elm$core$List$cons,
-												y,
-												A2(
-													$elm$core$List$cons,
-													z,
-													A2(
-														$elm$core$List$cons,
-														w,
-														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
-											$elm$core$List$cons,
-											x,
-											A2(
-												$elm$core$List$cons,
-												y,
-												A2(
-													$elm$core$List$cons,
-													z,
-													A2(
-														$elm$core$List$cons,
-														w,
-														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
-									} else {
-										break _v0$5;
-									}
-							}
-						} else {
-							if (_v0.a === 1) {
-								break _v0$1;
-							} else {
-								break _v0$5;
-							}
-						}
-					}
-				}
-				return list;
-			}
-			var _v1 = _v0.b;
-			var x = _v1.a;
-			return _List_fromArray(
-				[x]);
-		}
-	});
-var $elm$core$List$take = F2(
-	function (n, list) {
-		return A3($elm$core$List$takeFast, 0, n, list);
-	});
+var $elm$core$Basics$neq = _Utils_notEqual;
 var $author$project$Todo$removeFromList = F2(
 	function (index, todosList) {
-		return _Utils_ap(
-			A2($elm$core$List$take, index, todosList),
-			A2($elm$core$List$drop, index + 1, todosList));
+		return A2(
+			$elm$core$List$filter,
+			function (item) {
+				return !_Utils_eq(item.index, index);
+			},
+			todosList);
 	});
 var $elm$core$Basics$not = _Basics_not;
 var $author$project$Todo$toggleAtIndex = F2(
@@ -5341,7 +5209,7 @@ var $author$project$Todo$toggleAtIndex = F2(
 			$elm$core$List$indexedMap,
 			F2(
 				function (currentIndex, todo) {
-					return _Utils_eq(currentIndex, index) ? _Utils_update(
+					return _Utils_eq(todo.index, index) ? _Utils_update(
 						todo,
 						{completed: !todo.completed}) : todo;
 				}),
@@ -5400,34 +5268,13 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
-var $elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			$elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2($elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
-	});
-var $elm$core$Tuple$second = function (_v0) {
-	var y = _v0.b;
-	return y;
-};
-var $elm$html$Html$Attributes$classList = function (classes) {
-	return $elm$html$Html$Attributes$class(
-		A2(
-			$elm$core$String$join,
-			' ',
-			A2(
-				$elm$core$List$map,
-				$elm$core$Tuple$first,
-				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
-};
 var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$Attributes$for = $elm$html$Html$Attributes$stringProperty('htmlFor');
+var $elm$html$Html$form = _VirtualDom_node('form');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
 var $elm$html$Html$input = _VirtualDom_node('input');
+var $elm$html$Html$label = _VirtualDom_node('label');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -5478,10 +5325,10 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			$elm$html$Html$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
-var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
+var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
 var $author$project$Todo$RemoveTodo = function (a) {
 	return {$: 'RemoveTodo', a: a};
@@ -5498,18 +5345,21 @@ var $elm$html$Html$Attributes$boolProperty = F2(
 			$elm$json$Json$Encode$bool(bool));
 	});
 var $elm$html$Html$Attributes$checked = $elm$html$Html$Attributes$boolProperty('checked');
+var $elm$html$Html$i = _VirtualDom_node('i');
+var $elm$html$Html$li = _VirtualDom_node('li');
+var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
-var $elm$html$Html$ul = _VirtualDom_node('ul');
 var $author$project$Todo$viewTodo = function (todo) {
 	return A2(
-		$elm$html$Html$ul,
+		$elm$html$Html$li,
 		_List_fromArray(
 			[
 				A2(
 				$elm$html$Html$Attributes$style,
 				'text-decoration',
-				todo.completed ? 'line-through' : 'none')
+				todo.completed ? 'line-through' : 'none'),
+				$elm$html$Html$Attributes$class('todo-item')
 			]),
 		_List_fromArray(
 			[
@@ -5521,34 +5371,28 @@ var $author$project$Todo$viewTodo = function (todo) {
 						$elm$html$Html$Attributes$checked(todo.completed),
 						$elm$html$Html$Events$onClick(
 						$author$project$Todo$ToggleTodo(todo.index)),
-						$elm$html$Html$Attributes$class('checkbox')
+						$elm$html$Html$Attributes$class('checkbox form-check-input')
 					]),
 				_List_Nil),
-				$elm$html$Html$text(todo.text),
 				A2(
-				$elm$html$Html$button,
+				$elm$html$Html$span,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$type_('button'),
-						$elm$html$Html$Events$onClick(
-						$author$project$Todo$ToggleTodo(todo.index))
+						$elm$html$Html$Attributes$class('todo-label')
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text('Toggle')
+						$elm$html$Html$text(todo.text)
 					])),
 				A2(
-				$elm$html$Html$button,
+				$elm$html$Html$i,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$type_('button'),
+						$elm$html$Html$Attributes$class('bi-trash todo-delete'),
 						$elm$html$Html$Events$onClick(
 						$author$project$Todo$RemoveTodo(todo.index))
 					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Delete')
-					]))
+				_List_Nil)
 			]));
 };
 var $author$project$Todo$view = function (model) {
@@ -5556,12 +5400,7 @@ var $author$project$Todo$view = function (model) {
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$classList(
-				_List_fromArray(
-					[
-						_Utils_Tuple2('pure-g', true),
-						_Utils_Tuple2('container', true)
-					]))
+				$elm$html$Html$Attributes$class('container')
 			]),
 		_List_fromArray(
 			[
@@ -5569,90 +5408,97 @@ var $author$project$Todo$view = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
-						$elm$html$Html$Attributes$classList(
-						_List_fromArray(
-							[
-								_Utils_Tuple2('pure-u-1', true),
-								_Utils_Tuple2('title', true)
-							]))
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$h1,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text('The ToDo App')
-							]))
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$classList(
-						_List_fromArray(
-							[
-								_Utils_Tuple2('pure-u-1-2', true),
-								_Utils_Tuple2('inputs', true)
-							]))
+						$elm$html$Html$Attributes$class('row')
 					]),
 				_List_fromArray(
 					[
 						A2(
 						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$classList(
-								_List_fromArray(
-									[
-										_Utils_Tuple2('pure-form', true),
-										_Utils_Tuple2('pure-form-stacked', true)
-									]))
-							]),
+						_List_Nil,
 						_List_fromArray(
 							[
 								A2(
-								$elm$html$Html$input,
+								$elm$html$Html$h1,
 								_List_fromArray(
 									[
-										$elm$html$Html$Events$onInput($author$project$Todo$ChangeInput),
-										$elm$html$Html$Attributes$value(model.inputText),
-										$elm$html$Html$Attributes$placeholder('I need to...'),
-										$elm$html$Html$Attributes$type_('text')
+										$elm$html$Html$Attributes$class('text-center')
 									]),
-								_List_Nil),
-								A2(
-								$elm$html$Html$button,
 								_List_fromArray(
 									[
-										$elm$html$Html$Events$onClick($author$project$Todo$AddTodo),
-										$elm$html$Html$Attributes$classList(
+										$elm$html$Html$text('The ToDo App')
+									])),
+								A2(
+								$elm$html$Html$form,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$div,
 										_List_fromArray(
 											[
-												_Utils_Tuple2('pure-button', true),
-												_Utils_Tuple2('pure-button-primary', true)
+												$elm$html$Html$Attributes$class('form-group')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$label,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('control-label'),
+														$elm$html$Html$Attributes$for('Todo List')
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Task ToDo')
+													])),
+												A2(
+												$elm$html$Html$input,
+												_List_fromArray(
+													[
+														$elm$html$Html$Events$onInput($author$project$Todo$ChangeInput),
+														$elm$html$Html$Attributes$value(model.inputText),
+														$elm$html$Html$Attributes$class('form-control'),
+														$elm$html$Html$Attributes$id('name'),
+														$elm$html$Html$Attributes$type_('text')
+													]),
+												_List_Nil)
 											])),
-										$elm$html$Html$Attributes$type_('button')
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('Add ToDo')
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('text-center')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$button,
+												_List_fromArray(
+													[
+														$elm$html$Html$Events$onClick($author$project$Todo$AddTodo),
+														$elm$html$Html$Attributes$class('btn btn-sm btn-primary add-task'),
+														$elm$html$Html$Attributes$type_('button')
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Add Task')
+													]))
+											])),
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('todo-list')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$ul,
+												_List_Nil,
+												A2($elm$core$List$map, $author$project$Todo$viewTodo, model.todos))
+											]))
 									]))
 							]))
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('pure-u-1-2')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$div,
-						_List_Nil,
-						A2($elm$core$List$map, $author$project$Todo$viewTodo, model.todos))
 					]))
 			]));
 };

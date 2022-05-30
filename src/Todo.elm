@@ -26,8 +26,7 @@ type Message
 init : () -> ( Model, Cmd Message )
 init _ =
     ( { inputText = ""
-      , todos =
-            []
+      , todos =[]
       }
     , Cmd.none
     )
@@ -57,52 +56,69 @@ addToList input todosList =
         todosList ++ [{text = input, completed = False, index = List.length todosList}]
 
 removeFromList : Int -> List Todo -> List Todo
-removeFromList index todosList =
-        List.take index todosList ++ List.drop (index + 1) todosList
+removeFromList index todosList = 
+        List.filter  (\item -> item.index /= index) todosList
 
 toggleAtIndex : Int -> List Todo -> List Todo
 toggleAtIndex index todosList =
         List.indexedMap (\currentIndex todo -> 
-            if currentIndex == index then 
+            if todo.index == index then 
                 { todo | completed = not todo.completed}
             else
                 todo
         ) todosList
 
-renderTodo : Todo -> Html Message
-renderTodo todo =
-    div [ onClick (ToggleTodo todo.index), class "todo"] 
-        [ input [ type_ "checkbox", checked todo.completed, class "checkbox" ] []
-        , text todo.text
-        ]
-
 view : Model -> Html Message
 view model =
-    div [ classList [ ( "pure-g", True ), ( "container", True ) ] ]
-        [ div [ classList [ ( "pure-u-1", True ), ( "title", True ) ] ] [ h1 [][text "The ToDo App" ]]
-        , div [ classList [ ( "pure-u-1-2", True ), ( "inputs", True ) ] ]
-            [ div [ classList [ ( "pure-form", True ), ( "pure-form-stacked", True ) ] ]
-                [ input [ onInput ChangeInput, value model.inputText, placeholder "I need to...", type_ "text"] []
-                , button [ onClick AddTodo, classList [ ( "pure-button", True ), ( "pure-button-primary", True ) ], type_ "button" ] [ text "Add ToDo" ]
+    div [ class "container" ]
+        [ div [ class "row" ]
+            [ div []
+                [ h1 [ class "text-center" ] [ text "The ToDo App" ]
+                , Html.form []
+                    [ div [ class "form-group" ]
+                        [ label
+                            [ class "control-label"
+                            , for "Todo List"
+                            ]
+                            [ text "Task ToDo" ]
+                        , input
+                            [ onInput ChangeInput, value model.inputText, class "form-control"
+                            , id "name"
+                            , type_ "text"
+                            ]
+                            []
+                        ]
+                    , div [ class "text-center" ]
+                        [ button
+                            [ onClick AddTodo, class "btn btn-sm btn-primary add-task"
+                            , type_ "button"
+                            ]
+                            [ text "Add Task" ]
+                        ]
+                    , div [ class "todo-list" ]
+                        [ ul [] 
+                            (List.map viewTodo model.todos)
+                        ]
+                    ]
                 ]
             ]
-        , div [ class "pure-u-1-2" ] [ div [] (List.map viewTodo model.todos)]
+            
         ]
 
 viewTodo : Todo -> Html Message
 viewTodo todo =
-    ul
+    li
         [ style "text-decoration"
             ( if todo.completed then
                 "line-through"
             else
                 "none"
-            )
+            ),
+            class "todo-item" 
         ]
-        [ input [ type_ "checkbox", checked todo.completed, onClick (ToggleTodo todo.index), class "checkbox" ] []
-        , text todo.text
-        , button [ type_ "button", onClick (ToggleTodo todo.index) ] [text "Toggle"] 
-        , button [ type_ "button", onClick (RemoveTodo todo.index) ] [text "Delete"]
+        [ input [ type_ "checkbox", checked todo.completed, onClick (ToggleTodo todo.index), class "checkbox form-check-input" ] []
+        , span [class "todo-label"] [text todo.text]
+        , i [ class "bi-trash todo-delete", onClick (RemoveTodo todo.index) ] []
         ]
 
 main : Program () Model Message
